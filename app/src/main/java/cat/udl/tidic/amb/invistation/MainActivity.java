@@ -3,30 +3,30 @@ package cat.udl.tidic.amb.invistation;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import cat.udl.tidic.amb.invistation.Controllers.FormPresenter;
+import cat.udl.tidic.amb.invistation.Controllers.MainViewPresenter;
 
-public class MainActivity extends AppCompatActivity implements UserViewActions {
+public class MainActivity extends AppCompatActivity implements MainViewActions {
 
-    private FormPresenter controller = new FormPresenter(this);
-    private Button button_create;
     private TextView numEvents;
+    private MainViewPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button_create = (Button) findViewById(R.id.b_create);
-        numEvents = (TextView) findViewById(R.id.numEv);
+        Button button_create = findViewById(R.id.b_create);
+        numEvents = findViewById(R.id.numEvents);
 
-        //Actualizem text numevents
-        controller.showNumEv();
+
+        presenter = new MainViewPresenter(this);
+        this.presenter.getEvents();
+
         button_create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,18 +36,13 @@ public class MainActivity extends AppCompatActivity implements UserViewActions {
         });
     }
     private void openForm(){
-        Intent intent = new Intent(this, Form.class);
+        Intent intent = new Intent(getApplicationContext(), Form.class);
         startActivity(intent);
     }
 
-    @Override
-    public void actualitzar(String message, String date) {
-
-    }
 
     @Override
-    public void actualitzar(String numEv) {
-        numEvents.setText(numEv);
+    public void showEvents(int events) {
+        numEvents.setText(String.valueOf(events));
     }
-
 }

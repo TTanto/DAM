@@ -96,7 +96,7 @@
         app:layout_constraintVertical_bias="0.238" />
 
     <TextView
-        android:id="@+id/numEv"
+        android:id="@+id/numEvents"
         android:layout_width="227dp"
         android:layout_height="34dp"
         android:layout_marginStart="24dp"
