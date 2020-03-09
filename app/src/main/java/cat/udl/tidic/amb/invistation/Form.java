@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,14 +12,19 @@ import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import cat.udl.tidic.amb.invistation.Controllers.FormPresenter;
 
-public class Form extends AppCompatActivity implements UserViewActions {
+public class Form extends AppCompatActivity implements FormViewActions{
 
     private RadioButton r_birth;
     private RadioButton r_lparty;
     private CalendarView calendar;
-    private FormPresenter controller = new FormPresenter(this);;
+    private FormPresenter presenter = new FormPresenter(this);
     private Button create;
     private EditText descripcion;
     private Button cancel;
@@ -44,7 +48,10 @@ public class Form extends AppCompatActivity implements UserViewActions {
         calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                controller.getCalendarResource(year, month, dayOfMonth);
+                //String Date = dayOfMonth + "-" + (month + 1) + "-" + year;
+                Calendar c = Calendar.getInstance();
+                c.set(year,month,dayOfMonth);
+                calendar.setDate(c.getTimeInMillis());
             }
         });
 
@@ -52,27 +59,23 @@ public class Form extends AppCompatActivity implements UserViewActions {
             @Override
             public void onClick(View v) {
                 String descri = descripcion.getText().toString();
-                String date = controller.getDate();
-                Intent intent = new Intent();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+                String date = sdf.format(new Date(calendar.getDate()));
+                String type = "";
+
 
                 if (r_birth.isChecked()) {
-                    Log.i("setInvitation/", "-----------------birht122");
-                    intent = new Intent(Form.this, Result_Birth.class);
-                    Log.i("setInvitation/", "-----------------form ---> BIRTH");
-                    controller.setInfo(descri, date, "birth");
+                    type =  "birth";
 
                 }
-                if (r_lparty.isChecked()) {
-                    Log.i("setInvitation/", "-----------------elparty122");
-                    intent = new Intent(Form.this, Result_Lparty.class);
-                    Log.i("setInvitation/", "-----------------form ---> LPARTY");
-                    controller.setInfo(descri, date, "lparty");
+                else if (r_lparty.isChecked()) {
+                    type = "lparty";
                 }
 
                 Log.i("OnClick/FORM/setinfo", " s'han actualitzat els valors correctament");
-                controller.putExtraInIntent(intent);
-                startActivity(intent);
 
+                presenter.setInvitation(descri,date,type);
+                presenter.getInvitation();
 
             }
         });
@@ -91,14 +94,16 @@ public class Form extends AppCompatActivity implements UserViewActions {
 
 
     @Override
-    public void actualitzar(String message, String date) {
+    public void showInvitation(String desc, String date, String type) throws Exception {
+
+        Intent intent = new Intent();
+        intent = new Intent(getApplicationContext(), ResultForm.class);
+        intent.putExtra("type",type);
+        startActivity(intent);
 
     }
 
-    @Override
-    public void actualitzar(String num_events) {
 
-    }
 }
 
 
